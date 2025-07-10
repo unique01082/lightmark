@@ -1,21 +1,26 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Upload, X } from "lucide-react"
-import type { Album } from "@/lib/types"
+import { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Upload, X } from "lucide-react";
+import type { Album } from "@/lib/types";
 
 interface AlbumFormProps {
-  album?: Album
-  isOpen: boolean
-  onClose: () => void
-  onSave: (album: Partial<Album>) => void
+  album?: Album;
+  isOpen: boolean;
+  onClose: () => void;
+  onSave: (album: Partial<Album>) => void;
 }
 
 export function AlbumForm({ album, isOpen, onClose, onSave }: AlbumFormProps) {
@@ -25,25 +30,32 @@ export function AlbumForm({ album, isOpen, onClose, onSave }: AlbumFormProps) {
     link: album?.link || "",
     description: album?.description || "",
     cover_image: album?.cover_image || "",
-  })
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     onSave({
       ...formData,
       slug: formData.name.toLowerCase().replace(/\s+/g, "-"),
-    })
-    onClose()
-  }
+    });
+    // Reset form for next use
+    setFormData({
+      name: "",
+      author: "",
+      link: "",
+      description: "",
+      cover_image: "",
+    });
+  };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
+    const file = e.target.files?.[0];
     if (file) {
       // In a real app, upload to storage and get URL
-      const imageUrl = URL.createObjectURL(file)
-      setFormData((prev) => ({ ...prev, cover_image: imageUrl }))
+      const imageUrl = URL.createObjectURL(file);
+      setFormData((prev) => ({ ...prev, cover_image: imageUrl }));
     }
-  }
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -59,7 +71,9 @@ export function AlbumForm({ album, isOpen, onClose, onSave }: AlbumFormProps) {
               <Input
                 id="name"
                 value={formData.name}
-                onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, name: e.target.value }))
+                }
                 placeholder="e.g., Urban Photography Collection"
                 required
               />
@@ -70,7 +84,9 @@ export function AlbumForm({ album, isOpen, onClose, onSave }: AlbumFormProps) {
               <Input
                 id="author"
                 value={formData.author}
-                onChange={(e) => setFormData((prev) => ({ ...prev, author: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, author: e.target.value }))
+                }
                 placeholder="Photographer name"
                 required
               />
@@ -82,7 +98,9 @@ export function AlbumForm({ album, isOpen, onClose, onSave }: AlbumFormProps) {
                 id="link"
                 type="url"
                 value={formData.link}
-                onChange={(e) => setFormData((prev) => ({ ...prev, link: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, link: e.target.value }))
+                }
                 placeholder="https://example.com/portfolio"
               />
             </div>
@@ -92,7 +110,12 @@ export function AlbumForm({ album, isOpen, onClose, onSave }: AlbumFormProps) {
               <Textarea
                 id="description"
                 value={formData.description}
-                onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    description: e.target.value,
+                  }))
+                }
                 placeholder="Describe your album..."
                 rows={4}
               />
@@ -113,7 +136,9 @@ export function AlbumForm({ album, isOpen, onClose, onSave }: AlbumFormProps) {
                       variant="destructive"
                       size="sm"
                       className="absolute -top-2 -right-2"
-                      onClick={() => setFormData((prev) => ({ ...prev, cover_image: "" }))}
+                      onClick={() =>
+                        setFormData((prev) => ({ ...prev, cover_image: "" }))
+                      }
                     >
                       <X className="h-3 w-3" />
                     </Button>
@@ -121,7 +146,9 @@ export function AlbumForm({ album, isOpen, onClose, onSave }: AlbumFormProps) {
                 ) : (
                   <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center">
                     <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
-                    <p className="text-sm text-muted-foreground mb-2">Upload a cover image</p>
+                    <p className="text-sm text-muted-foreground mb-2">
+                      Upload a cover image
+                    </p>
                     <input
                       type="file"
                       accept="image/*"
@@ -149,5 +176,5 @@ export function AlbumForm({ album, isOpen, onClose, onSave }: AlbumFormProps) {
         </form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
