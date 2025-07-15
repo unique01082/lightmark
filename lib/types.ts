@@ -1,49 +1,51 @@
 export interface DataType {
   id: string
+  user_created: string
+  date_created: string
+  user_updated: string
+  date_updated: string
   name: string
   slug: string
   description: string
-  avatar?: string
+  icon?: string
   fields: CustomField[]
-  created_at: string
-  updated_at: string
 }
 
 export interface CustomField {
   id: string
   name: string
-  field_type: "string" | "number" | "link" | "datetime" | "image" | "video" | "file" | "tags" | "dropdown" | "radio"
-  options?: { options?: string[] }
+  type: "string" | "number" | "link" | "datetime" | "image" | "video" | "file" | "tags" | "dropdown" | "radio" | "multiple-dropdown"
   required: boolean
-  order: number
+  settings?: {
+    options?: string[]
+  }
 }
 
 export interface DataItem {
   id: string
-  type_id: string
-  slug: string
-  title: string
+  user_created: string
+  date_created: string
+  user_updated: string
+  date_updated: string
+  type: string
+  fields: Record<string, any>
+  name: string
   description: string
   avatar?: string
-  custom_values: Record<string, any>
-  gallery: string[]
-  linked_album_ids: string[]
-  created_at: string
-  updated_at: string
+  albums?: number[]
 }
 
 export interface Album {
   id: string
   name: string
-  slug: string
   author: string
-  link: string
+  links: { url: string, type: string }[];
   description: string
-  cover_image?: string
-  photo_ids: string[]
-  linked_item_ids: string[]
-  created_at: string
-  updated_at: string
+  avatar?: string
+  photos: string[]
+  items: string[]
+  date_created: string
+  date_updated: string
 }
 
 export interface Photo {
@@ -51,10 +53,10 @@ export interface Photo {
   file: string
   album_id?: string
   tags: string[]
-  linked_item_ids: string[]
+  items: string[]
   metadata: Record<string, any>
-  created_at: string
-  updated_at: string
+  date_created: string
+  date_updated: string
 }
 
 export interface User {
@@ -62,6 +64,6 @@ export interface User {
   email: string
   role: "admin" | "viewer"
   preferences: Record<string, any>
-  created_at: string
-  updated_at: string
+  date_created: string
+  date_updated: string
 }

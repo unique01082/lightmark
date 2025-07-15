@@ -65,10 +65,11 @@ export default function AlbumsPage() {
   );
 
   const handleCreateAlbum = async (albumData: any) => {
+    console.log("albumData :>> ", albumData);
     const newAlbum = {
       name: albumData.name,
       author: albumData.author,
-      links: [{ url: albumData.link || "", type: "Unknown" }],
+      links: albumData.links || [],
       description: albumData.description || "",
       slug: albumData.slug || albumData.name.toLowerCase().replace(/\s+/g, "-"),
       avatar: albumData.avatar,

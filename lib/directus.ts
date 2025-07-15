@@ -1,4 +1,4 @@
-import { authentication, createDirectus, createItem, deleteItem, readItem, readItems, readMe, registerUser, rest, serverInfo, serverPing, updateItem } from '@directus/sdk';
+import { authentication, createDirectus, createItem, deleteItem, readItem, readItems, readMe, registerUser, rest, serverInfo, serverPing, updateItem, uploadFiles } from '@directus/sdk';
 
 // Directus collections
 export const DIRECTUS_COLLECTIONS = {
@@ -13,28 +13,37 @@ export const DIRECTUS_COLLECTIONS = {
 
 // Type definitions
 interface DataType {
-  id?: string;
+  id: string;
+  user_created: string;
+  date_created: string;
+  user_updated: string;
+  date_updated: string;
   name: string;
-  description?: string;
+  slug: string;
+  description: string;
   icon?: string;
-  fields?: any[];
-  date_created?: string;
-  date_updated?: string;
+  fields: any[];
 }
 
 interface DataItem {
-  id?: string;
-  data_type: string;
-  data: any;
-  date_created?: string;
-  date_updated?: string;
+  id: string;
+  user_created: string;
+  date_created: string;
+  user_updated: string;
+  date_updated: string;
+  type: string;
+  fields: any;
+  name: string;
+  description: string;
+  avatar?: string;
+  albums?: number[];
 }
 
 interface Album {
   id?: string;
   name: string;
   description?: string;
-  photos?: string[];
+  photos?: { directus_files_id: string }[];
   date_created?: string;
   date_updated?: string;
 }
@@ -164,17 +173,17 @@ export class DirectusService {
     }
   }
 
-  static async getDataType(id: string) {
+  static async getDataType(id: string): Promise<DataType | null> {
     try {
       const dataType = await DirectusService.client.request(
         readItem(DIRECTUS_COLLECTIONS.DATA_TYPES, id, { fields: ['*'] })
       );
-      return dataType;
+      return dataType as DataType;
     } catch (error) {
       console.error("Get data type error:", error);
       // Fallback to mock data
       const dataTypes = DirectusService.getMockDataTypes();
-      return dataTypes.find((dt: any) => dt.id === id) || null;
+      return dataTypes.find((dt: DataType) => dt.id === id) || null;
     }
   }
 
@@ -215,7 +224,7 @@ export class DirectusService {
     }
   }
 
-  static async getDataItems(filters?: any) {
+  static async getDataItems(filters?: any): Promise<DataItem[]> {
     try {
       const items = await DirectusService.client.request(
         readItems(DIRECTUS_COLLECTIONS.DATA_ITEMS, {
@@ -224,10 +233,29 @@ export class DirectusService {
           sort: ['-date_created']
         })
       );
-      return items;
+      return items as DataItem[];
     } catch (error) {
       console.error("Get data items error:", error);
-      return [];
+      // Fallback to mock data
+      const mockItems = DirectusService.getMockDataItems();
+      if (filters?.type?._eq) {
+        return mockItems.filter(item => item.type === filters.type._eq);
+      }
+      return mockItems;
+    }
+  }
+
+  static async getDataItem(id: string): Promise<DataItem | null> {
+    try {
+      const item = await DirectusService.client.request(
+        readItem(DIRECTUS_COLLECTIONS.DATA_ITEMS, id, { fields: ['*'] })
+      );
+      return item as DataItem;
+    } catch (error) {
+      console.error("Get data item error:", error);
+      // Fallback to mock data
+      const mockItems = DirectusService.getMockDataItems();
+      return mockItems.find(item => item.id === id) || null;
     }
   }
 
@@ -319,68 +347,33 @@ export class DirectusService {
     }
   }
 
-  // Photos CRUD
-  static async createPhoto(photo: Omit<Photo, 'id' | 'date_created' | 'date_updated'>) {
+  // Files CRUD
+  static async uploadFile(file) {
     try {
+      const formData = new FormData();
+      formData.append('file_1_property', 'Value');
+      formData.append('file', file);
       const result = await DirectusService.client.request(
-        createItem(DIRECTUS_COLLECTIONS.PHOTOS, photo)
+        uploadFiles(formData)
       );
       return result;
     } catch (error) {
-      console.error("Create photo error:", error);
+      console.error("Upload file error:", error);
       throw error;
     }
   }
-
-  static async getPhotos(albumId?: string) {
+  static async uploadFiles(...files) {
     try {
-      const filter = albumId ? { album: { _eq: albumId } } : {};
-      const photos = await DirectusService.client.request(
-        readItems(DIRECTUS_COLLECTIONS.PHOTOS, {
-          fields: ['*'],
-          filter,
-          sort: ['date_created']
-        })
-      );
-      return photos;
-    } catch (error) {
-      console.error("Get photos error:", error);
-      return [];
-    }
-  }
-
-  static async getPhoto(id: string) {
-    try {
-      const photo = await DirectusService.client.request(
-        readItem(DIRECTUS_COLLECTIONS.PHOTOS, id)
-      );
-      return photo;
-    } catch (error) {
-      console.error("Get photo error:", error);
-      return null;
-    }
-  }
-
-  static async updatePhoto(id: string, photo: Partial<Photo>) {
-    try {
+      const formData = new FormData();
+      files.forEach((file) => {
+        formData.append('file', file);
+      });
       const result = await DirectusService.client.request(
-        updateItem(DIRECTUS_COLLECTIONS.PHOTOS, id, photo)
+        uploadFiles(formData)
       );
       return result;
     } catch (error) {
-      console.error("Update photo error:", error);
-      throw error;
-    }
-  }
-
-  static async deletePhoto(id: string) {
-    try {
-      await DirectusService.client.request(
-        deleteItem(DIRECTUS_COLLECTIONS.PHOTOS, id)
-      );
-      return { success: true };
-    } catch (error) {
-      console.error("Delete photo error:", error);
+      console.error("Upload file error:", error);
       throw error;
     }
   }
@@ -485,58 +478,130 @@ export class DirectusService {
   private static getMockDataTypes() {
     return [
       {
-        id: "1",
+        id: "presets",
+        user_created: "d57a2c8d-f773-406a-b85f-bb031db3a472",
+        date_created: "2025-07-06T16:45:22.607Z",
+        user_updated: "d57a2c8d-f773-406a-b85f-bb031db3a472",
+        date_updated: "2025-07-06T17:03:18.129Z",
+        name: "Presets",
+        slug: "presets",
+        description: "Lightroom and photo editing presets",
+        icon: "file-sliders",
+        fields: [
+          {
+            id: "author",
+            name: "Author",
+            type: "string",
+            required: false,
+            settings: {}
+          },
+          {
+            id: "genre",
+            name: "Genre",
+            type: "multiple-dropdown",
+            required: false,
+            settings: {
+              options: ["Portrait", "Landscape", "Street", "Wedding"]
+            }
+          },
+          {
+            id: "mood",
+            name: "Mood",
+            type: "multiple-dropdown",
+            required: false,
+            settings: {
+              options: ["Romantic", "Melancholic", "Dramatic", "Mysterious"]
+            }
+          },
+          {
+            id: "tone",
+            name: "Tone",
+            type: "multiple-dropdown",
+            required: false,
+            settings: {
+              options: ["Warm", "Cool", "Neutral", "Earthy"]
+            }
+          }
+        ]
+      },
+      {
+        id: "color-profiles",
+        user_created: "d57a2c8d-f773-406a-b85f-bb031db3a472",
+        date_created: "2024-01-01T00:00:00Z",
+        user_updated: "d57a2c8d-f773-406a-b85f-bb031db3a472",
+        date_updated: "2024-01-01T00:00:00Z",
         name: "Color Profiles",
+        slug: "color-profiles",
         description: "ICC color profiles for accurate color reproduction",
         icon: "palette",
         fields: [
-          { id: "1", name: "Profile Name", type: "text", required: true, order: 1 },
           {
-            id: "2",
-            name: "Color Space",
-            type: "select",
+            id: "profile_name",
+            name: "Profile Name",
+            type: "string",
             required: true,
-            order: 2,
-            options: ["sRGB", "Adobe RGB", "ProPhoto RGB"],
+            settings: {}
           },
-          { id: "3", name: "Gamma", type: "number", required: false, order: 3 },
-        ],
-        date_created: "2024-01-01T00:00:00Z",
-        date_updated: "2024-01-01T00:00:00Z",
-      },
-      {
-        id: "2",
-        name: "Presets",
-        description: "Camera and editing presets for consistent results",
-        icon: "settings",
-        fields: [
-          { id: "4", name: "Preset Name", type: "text", required: true, order: 1 },
-          { id: "5", name: "Camera Model", type: "text", required: false, order: 2 },
-          { id: "6", name: "Settings", type: "textarea", required: true, order: 3 },
-        ],
-        date_created: "2024-01-01T00:00:00Z",
-        date_updated: "2024-01-01T00:00:00Z",
-      },
-      {
-        id: "3",
-        name: "Color Styles",
-        description: "Color grading and styling presets",
-        icon: "brush",
-        fields: [
-          { id: "7", name: "Style Name", type: "text", required: true, order: 1 },
           {
-            id: "8",
-            name: "Mood",
-            type: "select",
-            required: false,
-            order: 2,
-            options: ["Warm", "Cool", "Neutral", "Vintage"],
+            id: "color_space",
+            name: "Color Space",
+            type: "dropdown",
+            required: true,
+            settings: {
+              options: ["sRGB", "Adobe RGB", "ProPhoto RGB"]
+            }
           },
-          { id: "9", name: "Intensity", type: "number", required: false, order: 3 },
-        ],
-        date_created: "2024-01-01T00:00:00Z",
-        date_updated: "2024-01-01T00:00:00Z",
+          {
+            id: "gamma",
+            name: "Gamma",
+            type: "number",
+            required: false,
+            settings: {}
+          }
+        ]
+      }
+    ];
+  }
+
+  // Mock data for development fallback
+  private static getMockDataItems() {
+    return [
+      {
+        id: "3e90a6fc-66ba-4dc3-97d7-2e81ba3d13fe",
+        user_created: "d57a2c8d-f773-406a-b85f-bb031db3a472",
+        date_created: "2025-07-06T12:56:55.987Z",
+        user_updated: "d57a2c8d-f773-406a-b85f-bb031db3a472",
+        date_updated: "2025-07-06T17:24:51.521Z",
+        type: "presets",
+        fields: {
+          author: "BB LE",
+          mood: ["Romantic", "Dramatic"],
+          tone: ["Warm", "Neutral"],
+          genre: ["Portrait"]
+        },
+        name: "Moody Portrait Preset",
+        description: "Dark and moody preset perfect for dramatic portraits",
+        avatar: "fa5d8adf-541d-4b37-8f03-ff379339990f",
+        albums: [1, 2]
       },
+      {
+        id: "4e90a6fc-66ba-4dc3-97d7-2e81ba3d13aa",
+        user_created: "d57a2c8d-f773-406a-b85f-bb031db3a472",
+        date_created: "2025-07-06T12:56:55.987Z",
+        user_updated: "d57a2c8d-f773-406a-b85f-bb031db3a472",
+        date_updated: "2025-07-06T17:24:51.521Z",
+        type: "presets",
+        fields: {
+          author: "John Doe",
+          mood: ["Melancholic"],
+          tone: ["Cool"],
+          genre: ["Landscape", "Street"]
+        },
+        name: "Cool Landscape Preset",
+        description: "Perfect for outdoor landscape photography",
+        avatar: "fa5d8adf-541d-4b37-8f03-ff379339990f",
+        albums: [1]
+      }
     ];
   }
 }

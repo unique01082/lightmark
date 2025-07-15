@@ -39,6 +39,17 @@ export function Header() {
             <Button
               variant="ghost"
               size="sm"
+              onClick={() =>
+                DirectusService.login("baolq@lightmark.com", "asdasd").then(
+                  () => window.location.reload()
+                )
+              }
+            >
+              Refresh token
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={() => setTheme(theme === "light" ? "dark" : "light")}
             >
               <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
