@@ -1,29 +1,25 @@
-"use client";
+'use client';
 
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { MediaViewer } from "@/components/ui/media-viewer";
-import { PhotoUpload } from "@/components/ui/photo-upload";
-import { DirectusService } from "@/lib/directus";
-import { mockPhotos } from "@/lib/mock-data";
-import { useRequest } from "ahooks";
-import { Filter, Grid, LayoutList, Search, Trash2, Upload } from "lucide-react";
-import { useState } from "react";
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { MediaViewer } from '@/components/ui/media-viewer';
+import { PhotoUpload } from '@/components/ui/photo-upload';
+import { mockPhotos } from '@/lib/mock-data';
+import { Filter, Grid, LayoutList, Search, Trash2, Upload } from 'lucide-react';
+import { useState } from 'react';
 
 export default function PhotosPage() {
-  const {} = useRequest(DirectusService.getPhotos, {});
+  // const {} = useRequest(DirectusService.getPhotos, {});
 
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [searchQuery, setSearchQuery] = useState("");
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [searchQuery, setSearchQuery] = useState('');
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [isViewerOpen, setIsViewerOpen] = useState(false);
   const [isUploadOpen, setIsUploadOpen] = useState(false);
 
   const filteredPhotos = mockPhotos.filter((photo) =>
-    photo.tags.some((tag) =>
-      tag.toLowerCase().includes(searchQuery.toLowerCase())
-    )
+    photo.tags.some((tag) => tag.toLowerCase().includes(searchQuery.toLowerCase())),
   );
 
   const openViewer = (index: number) => {
@@ -38,9 +34,7 @@ export default function PhotosPage() {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-3xl font-bold">Photos</h1>
-            <p className="text-muted-foreground">
-              Manage and organize your photography collection
-            </p>
+            <p className="text-muted-foreground">Manage and organize your photography collection</p>
           </div>
           <Button onClick={() => setIsUploadOpen(true)}>
             <Upload className="h-4 w-4 mr-2" />
@@ -68,17 +62,17 @@ export default function PhotosPage() {
 
             <div className="flex items-center border rounded-md">
               <Button
-                variant={viewMode === "grid" ? "default" : "ghost"}
+                variant={viewMode === 'grid' ? 'default' : 'ghost'}
                 size="sm"
-                onClick={() => setViewMode("grid")}
+                onClick={() => setViewMode('grid')}
                 className="rounded-r-none"
               >
                 <Grid className="h-4 w-4" />
               </Button>
               <Button
-                variant={viewMode === "list" ? "default" : "ghost"}
+                variant={viewMode === 'list' ? 'default' : 'ghost'}
                 size="sm"
-                onClick={() => setViewMode("list")}
+                onClick={() => setViewMode('list')}
                 className="rounded-l-none"
               >
                 <LayoutList className="h-4 w-4" />
@@ -97,7 +91,7 @@ export default function PhotosPage() {
                 onClick={() => openViewer(index)}
               >
                 <img
-                  src={photo.file || "/placeholder.svg"}
+                  src={photo.file || '/placeholder.svg'}
                   alt={`Photo ${index + 1}`}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
@@ -132,8 +126,8 @@ export default function PhotosPage() {
             <h3 className="text-lg font-semibold mb-2">No photos found</h3>
             <p className="text-muted-foreground max-w-sm mb-4">
               {searchQuery
-                ? "No photos match your search criteria."
-                : "Upload your first photos to get started."}
+                ? 'No photos match your search criteria.'
+                : 'Upload your first photos to get started.'}
             </p>
             <Button>
               <Upload className="h-4 w-4 mr-2" />
@@ -146,7 +140,7 @@ export default function PhotosPage() {
         isOpen={isUploadOpen}
         onClose={() => setIsUploadOpen(false)}
         onUpload={(photos) => {
-          console.log("Uploading photos:", photos);
+          console.log('Uploading photos:', photos);
           // Handle upload logic here
         }}
       />
