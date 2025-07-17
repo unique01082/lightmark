@@ -6,6 +6,31 @@ export interface MediaViewerProps {
   onIndexChange: (index: number) => void;
   metadata?: Record<string, any>;
   rotation?: RotationState; // Added rotation state
+
+  // Feature enable/disable props
+  enableZoom?: boolean;
+  enableSlideshow?: boolean;
+  enableFavorites?: boolean;
+  enableRatings?: boolean;
+  enableKeyboardShortcuts?: boolean;
+  enableCrop?: boolean;
+  enableFullscreen?: boolean;
+  enableGestures?: boolean;
+  enableUIState?: boolean;
+
+  // Feature configuration
+  initialFavorites?: string[];
+  initialRatings?: Record<string, number>;
+  customKeyboardShortcuts?: Array<{
+    key: string;
+    ctrlKey?: boolean;
+    altKey?: boolean;
+    shiftKey?: boolean;
+    action: () => void;
+    description: string;
+  }>;
+  maxRating?: number;
+  slideshowInterval?: number;
 }
 
 export interface ImageSize {

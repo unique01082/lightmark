@@ -33,13 +33,13 @@ const CONFIG = {
 
 // Install event - cache static assets
 self.addEventListener('install', (event) => {
-  console.log('Service Worker: Install event');
+  console.debug('Service Worker: Install event');
 
   event.waitUntil(
     caches
       .open(CACHE_NAME)
       .then((cache) => {
-        console.log('Service Worker: Caching static files');
+        console.debug('Service Worker: Caching static files');
         return cache.addAll(STATIC_CACHE_FILES);
       })
       .then(() => {
@@ -50,7 +50,7 @@ self.addEventListener('install', (event) => {
 
 // Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
-  console.log('Service Worker: Activate event');
+  console.debug('Service Worker: Activate event');
 
   event.waitUntil(
     caches
@@ -63,7 +63,7 @@ self.addEventListener('activate', (event) => {
               cacheName !== IMAGE_CACHE_NAME &&
               cacheName !== API_CACHE_NAME
             ) {
-              console.log('Service Worker: Deleting old cache:', cacheName);
+              console.debug('Service Worker: Deleting old cache:', cacheName);
               return caches.delete(cacheName);
             }
           }),
@@ -125,7 +125,7 @@ async function handleImageRequest(request) {
       const isExpired = Date.now() - cacheDate.getTime() > CONFIG.CACHE_EXPIRATION_TIME;
 
       if (!isExpired) {
-        console.log('Service Worker: Serving image from cache:', request.url);
+        console.debug('Service Worker: Serving image from cache:', request.url);
         return cachedResponse;
       }
     }
@@ -141,7 +141,7 @@ async function handleImageRequest(request) {
       const responseClone = networkResponse.clone();
       cache.put(request, responseClone);
 
-      console.log('Service Worker: Cached image from network:', request.url);
+      console.debug('Service Worker: Cached image from network:', request.url);
 
       // Notify clients about cache update
       notifyClients('CACHE_UPDATED', { url: request.url, type: 'image' });
@@ -258,7 +258,7 @@ async function manageCacheSize(cache, cacheName) {
       await cache.delete(request);
     }
 
-    console.log(`Service Worker: Cleaned up ${entriesToRemove.length} entries from ${cacheName}`);
+    console.debug(`Service Worker: Cleaned up ${entriesToRemove.length} entries from ${cacheName}`);
   }
 }
 
@@ -276,7 +276,7 @@ function notifyClients(type, data) {
 
 // Background sync for offline uploads
 self.addEventListener('sync', (event) => {
-  console.log('Service Worker: Background sync event:', event.tag);
+  console.debug('Service Worker: Background sync event:', event.tag);
 
   if (event.tag === CONFIG.BACKGROUND_SYNC_TAG) {
     event.waitUntil(handleBackgroundSync());
@@ -299,7 +299,7 @@ async function handleBackgroundSync() {
 
         if (response.ok) {
           await removePendingUpload(upload.id);
-          console.log('Service Worker: Successfully synced upload:', upload.id);
+          console.debug('Service Worker: Successfully synced upload:', upload.id);
         }
       } catch (error) {
         console.error('Service Worker: Failed to sync upload:', upload.id, error);
@@ -323,12 +323,12 @@ async function getPendingUploads() {
 // Remove pending upload from IndexedDB
 async function removePendingUpload(id) {
   // Implementation would use IndexedDB to remove the upload
-  console.log('Service Worker: Removing pending upload:', id);
+  console.debug('Service Worker: Removing pending upload:', id);
 }
 
 // Push notification for offline status
 self.addEventListener('push', (event) => {
-  console.log('Service Worker: Push event received');
+  console.debug('Service Worker: Push event received');
 
   if (event.data) {
     const data = event.data.json();
@@ -353,7 +353,7 @@ self.addEventListener('push', (event) => {
 
 // Handle notification clicks
 self.addEventListener('notificationclick', (event) => {
-  console.log('Service Worker: Notification click event');
+  console.debug('Service Worker: Notification click event');
 
   event.notification.close();
 
@@ -364,7 +364,7 @@ self.addEventListener('notificationclick', (event) => {
 
 // Handle messages from main thread
 self.addEventListener('message', (event) => {
-  console.log('Service Worker: Message received:', event.data);
+  console.debug('Service Worker: Message received:', event.data);
 
   if (event.data.type === 'CACHE_IMAGE') {
     handleCacheImageMessage(event.data.url);
@@ -381,7 +381,7 @@ async function handleCacheImageMessage(url) {
 
     if (response.ok) {
       await cache.put(url, response);
-      console.log('Service Worker: Cached image via message:', url);
+      console.debug('Service Worker: Cached image via message:', url);
     }
   } catch (error) {
     console.error('Service Worker: Failed to cache image via message:', error);
@@ -397,11 +397,11 @@ async function handleClearCacheMessage() {
       await caches.delete(cacheName);
     }
 
-    console.log('Service Worker: Cleared all caches');
+    console.debug('Service Worker: Cleared all caches');
     notifyClients('CACHE_CLEARED', {});
   } catch (error) {
     console.error('Service Worker: Failed to clear cache:', error);
   }
 }
 
-console.log('Service Worker: Loaded and ready');
+console.debug('Service Worker: Loaded and ready');

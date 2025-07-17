@@ -143,7 +143,7 @@ export const mockPhotos: Photo[] = [
     // file: "/placeholder.svg?height=600&width=800",
     file: '/neom-SUIMrEKVOXc-origin.jpg',
     album_id: '1',
-    tags: ['urban', 'architecture', 'city'],
+    tags: ['milkyway', 'night', 'stars'],
     linked_item_ids: ['1'],
     metadata: {
       camera: 'Canon EOS R5',
@@ -158,7 +158,22 @@ export const mockPhotos: Photo[] = [
     // file: "/placeholder.svg?height=600&width=800",
     file: '/yux-xiang-bAsOgzNy3XM-origin.jpg',
     album_id: '1',
-    tags: ['urban', 'architecture', 'city'],
+    tags: ['urban', 'architecture', 'city', 'night'],
+    linked_item_ids: ['1'],
+    metadata: {
+      camera: 'Canon EOS R5',
+      lens: '24-70mm f/2.8',
+      settings: 'f/8, 1/125s, ISO 200',
+    },
+    created_at: '2024-01-01T00:00:00Z',
+    updated_at: '2024-01-01T00:00:00Z',
+  },
+  {
+    id: '3',
+    // file: "/placeholder.svg?height=600&width=800",
+    file: '/tsuyoshi-kozu-9luf51j0R-0-origin.jpg',
+    album_id: '1',
+    tags: ['architecture', 'city'],
     linked_item_ids: ['1'],
     metadata: {
       camera: 'Canon EOS R5',
