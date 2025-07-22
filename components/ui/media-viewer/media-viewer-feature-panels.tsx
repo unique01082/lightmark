@@ -1,7 +1,9 @@
 'use client';
 
-import { Histogram } from './histogram';
+import { AdvancedColorAnalysis } from './advanced-color-analysis';
+import { AdvancedHistogram } from './advanced-histogram';
 import { useMediaViewerContext } from './media-viewer-context';
+import { ProfessionalQualityAssessment } from './professional-quality-assessment';
 import { QuickActions } from './quick-actions';
 import { RatingSystem } from './rating-system';
 
@@ -12,10 +14,14 @@ export function MediaViewerFeaturePanels() {
     showHistogram,
     showQuickActions,
     showRating,
+    showColorAnalysis,
+    showQualityAssessment,
     imageRatings,
     toggleHistogram,
     toggleQuickActions,
     toggleRating,
+    toggleColorAnalysis,
+    toggleQualityAssessment,
     handleEdit,
     handleRotate,
     setImageRatings,
@@ -52,10 +58,26 @@ export function MediaViewerFeaturePanels() {
   return (
     <>
       {showHistogram && (
-        <Histogram
+        <AdvancedHistogram
           imageSrc={images[currentIndex]}
           isVisible={showHistogram}
-          onToggle={toggleHistogram}
+          onClose={toggleHistogram}
+        />
+      )}
+
+      {showColorAnalysis && (
+        <AdvancedColorAnalysis
+          imageSrc={images[currentIndex]}
+          isVisible={showColorAnalysis}
+          onClose={toggleColorAnalysis}
+        />
+      )}
+
+      {showQualityAssessment && (
+        <ProfessionalQualityAssessment
+          imageSrc={images[currentIndex]}
+          isVisible={showQualityAssessment}
+          onToggle={toggleQualityAssessment}
         />
       )}
 

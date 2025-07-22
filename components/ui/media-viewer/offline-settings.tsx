@@ -25,6 +25,7 @@ import {
   Zap,
 } from 'lucide-react';
 import { useState } from 'react';
+import { useStackablePopup } from './use-stackable-popup';
 
 interface OfflineSettingsProps {
   isOnline: boolean;
@@ -94,11 +95,24 @@ export function OfflineSettings({
     return (offlineStats.totalEntries / offlineSettings.maxEntries) * 100;
   };
 
+  // Add stackable popup hook
+  const { style: popupStyle, popupRef } = useStackablePopup('offline-settings', {
+    width: 600,
+    height: 700,
+    visible: isVisible,
+  });
+
   if (!isVisible) return null;
 
   return (
-    <div className="fixed top-4 right-4 z-50 w-80 max-h-[80vh] overflow-y-auto">
-      <Card className="bg-black/90 backdrop-blur-sm border-white/20">
+    <div
+      ref={popupRef}
+      className="overflow-y-auto"
+      style={{
+        ...popupStyle,
+      }}
+    >
+      <Card className="bg-black/90 backdrop-blur-sm border-white/20 h-full">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">

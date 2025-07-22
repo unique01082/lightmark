@@ -213,6 +213,7 @@ function MediaViewerContent() {
         imageSrc={images[currentIndex]}
         onCropApply={handleApplyCrop}
         onCropCancel={handleEndCrop}
+        popupId="crop-simulator-new"
       />
 
       <MediaViewerSlideshowManager />

@@ -183,4 +183,19 @@ export const mockPhotos: Photo[] = [
     created_at: '2024-01-01T00:00:00Z',
     updated_at: '2024-01-01T00:00:00Z',
   },
+  {
+    id: '4',
+    // file: "/placeholder.svg?height=600&width=800",
+    file: '/DSC_0347.jpg',
+    album_id: '1',
+    tags: ['landscape', 'city'],
+    linked_item_ids: ['1'],
+    metadata: {
+      camera: 'Canon EOS R5',
+      lens: '24-70mm f/2.8',
+      settings: 'f/8, 1/125s, ISO 200',
+    },
+    created_at: '2024-01-01T00:00:00Z',
+    updated_at: '2024-01-01T00:00:00Z',
+  },
 ];

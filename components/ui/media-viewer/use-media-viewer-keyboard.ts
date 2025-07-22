@@ -12,6 +12,9 @@ interface UseMediaViewerKeyboardProps {
   onToggleFavorite?: () => void;
   onToggleSlideshow?: () => void;
   onToggleHistogram?: () => void;
+  onToggleDominantColors?: () => void;
+  onToggleColorAnalysis?: () => void;
+  onToggleQualityAssessment?: () => void;
   onToggleGrid?: () => void;
   onToggleQuickActions?: () => void;
   onToggleRating?: () => void;
@@ -103,6 +106,9 @@ export function useMediaViewerKeyboard({
   onToggleFavorite,
   onToggleSlideshow,
   onToggleHistogram,
+  onToggleDominantColors,
+  onToggleColorAnalysis,
+  onToggleQualityAssessment,
   onToggleGrid,
   onToggleQuickActions,
   onToggleRating,
@@ -353,8 +359,16 @@ export function useMediaViewerKeyboard({
     if (isOpen) onToggleHistogram?.();
   });
 
-  useKeyPress('g', () => {
-    if (isOpen) onToggleGrid?.();
+  useKeyPress('k', () => {
+    if (isOpen) onToggleDominantColors?.();
+  });
+
+  useKeyPress('c', () => {
+    if (isOpen) onToggleColorAnalysis?.();
+  });
+
+  useKeyPress('a', () => {
+    if (isOpen) onToggleQualityAssessment?.();
   });
 
   useKeyPress('q', () => {

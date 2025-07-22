@@ -14,12 +14,15 @@ import {
   Crop,
   Download,
   Edit,
+  Eye,
+  Gauge,
   Grid3x3,
   Heart,
   Info,
   Keyboard,
   Maximize,
   MoreVertical,
+  Palette,
   Pause,
   Play,
   RotateCw,
@@ -61,6 +64,12 @@ interface MediaViewerHeaderProps {
   onEdit?: () => void;
   onToggleHistogram?: () => void;
   showHistogram?: boolean;
+  onToggleDominantColors?: () => void;
+  showDominantColors?: boolean;
+  onToggleColorAnalysis?: () => void;
+  showColorAnalysis?: boolean;
+  onToggleQualityAssessment?: () => void;
+  showQualityAssessment?: boolean;
   onToggleGrid?: () => void;
   showGrid?: boolean;
   onToggleQuickActions?: () => void;
@@ -101,6 +110,12 @@ export function MediaViewerHeader({
   onEdit,
   onToggleHistogram,
   showHistogram,
+  onToggleDominantColors,
+  showDominantColors,
+  onToggleColorAnalysis,
+  showColorAnalysis,
+  onToggleQualityAssessment,
+  showQualityAssessment,
   onToggleGrid,
   showGrid,
   onToggleQuickActions,
@@ -282,6 +297,42 @@ export function MediaViewerHeader({
             </Button>
           )}
 
+          {onToggleDominantColors && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onToggleDominantColors}
+              className={`text-white hover:bg-white/20 ${showDominantColors ? 'bg-white/20' : ''}`}
+              title="Toggle dominant colors"
+            >
+              <Palette className="h-4 w-4" />
+            </Button>
+          )}
+
+          {onToggleColorAnalysis && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onToggleColorAnalysis}
+              className={`text-white hover:bg-white/20 ${showColorAnalysis ? 'bg-white/20' : ''}`}
+              title="Toggle color analysis"
+            >
+              <Eye className="h-4 w-4" />
+            </Button>
+          )}
+
+          {onToggleQualityAssessment && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onToggleQualityAssessment}
+              className={`text-white hover:bg-white/20 ${showQualityAssessment ? 'bg-white/20' : ''}`}
+              title="Toggle quality assessment"
+            >
+              <Gauge className="h-4 w-4" />
+            </Button>
+          )}
+
           {onToggleRating && (
             <Button
               variant="ghost"
@@ -339,6 +390,24 @@ export function MediaViewerHeader({
                 <DropdownMenuItem onClick={onToggleHistogram}>
                   <BarChart3 className="h-4 w-4 mr-2" />
                   {showHistogram ? 'Hide' : 'Show'} Histogram
+                </DropdownMenuItem>
+              )}
+              {onToggleDominantColors && (
+                <DropdownMenuItem onClick={onToggleDominantColors}>
+                  <Palette className="h-4 w-4 mr-2" />
+                  {showDominantColors ? 'Hide' : 'Show'} Dominant Colors
+                </DropdownMenuItem>
+              )}
+              {onToggleColorAnalysis && (
+                <DropdownMenuItem onClick={onToggleColorAnalysis}>
+                  <Eye className="h-4 w-4 mr-2" />
+                  {showColorAnalysis ? 'Hide' : 'Show'} Color Analysis
+                </DropdownMenuItem>
+              )}
+              {onToggleQualityAssessment && (
+                <DropdownMenuItem onClick={onToggleQualityAssessment}>
+                  <Gauge className="h-4 w-4 mr-2" />
+                  {showQualityAssessment ? 'Hide' : 'Show'} Quality Assessment
                 </DropdownMenuItem>
               )}
               {onToggleRating && (

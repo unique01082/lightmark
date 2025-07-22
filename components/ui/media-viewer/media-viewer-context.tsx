@@ -5,6 +5,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { useLazyImageLoading } from '../../../hooks/use-lazy-image-loading';
 import { useMediaViewerComparison } from '../../../hooks/use-media-viewer-comparison';
 import { useOfflineImageCache } from '../../../hooks/use-offline-image-cache';
+import { PopupManagerProvider } from './popup-manager';
 import type { ImageSize, PanState, RotationState, SlideshowState } from './types';
 import { useMediaViewerGestures } from './use-media-viewer-gestures';
 import { useMediaViewerKeyboard } from './use-media-viewer-keyboard';
@@ -48,6 +49,20 @@ interface MediaViewerContextType {
   setShowRating: (show: boolean) => void;
   showLoadingIndicator: boolean;
   setShowLoadingIndicator: (show: boolean) => void;
+
+  // Dominant Colors
+  showDominantColors: boolean;
+  setShowDominantColors: (show: boolean) => void;
+  selectedHighlightColor: any;
+  setSelectedHighlightColor: (color: any) => void;
+
+  // Color Analysis
+  showColorAnalysis: boolean;
+  setShowColorAnalysis: (show: boolean) => void;
+
+  // Quality Assessment
+  showQualityAssessment: boolean;
+  setShowQualityAssessment: (show: boolean) => void;
 
   // Slideshow
   slideshow: SlideshowState;
@@ -115,6 +130,9 @@ interface MediaViewerContextType {
   toggleGrid: () => void;
   toggleQuickActions: () => void;
   toggleRating: () => void;
+  toggleDominantColors: () => void;
+  toggleColorAnalysis: () => void;
+  toggleQualityAssessment: () => void;
   handleToggleComparison: () => void;
   handleDelete: () => void;
   handleShare: () => void;
@@ -247,6 +265,25 @@ export function MediaViewerProvider({
   );
   const [showKeyboardHelp, setShowKeyboardHelp] = useState(false);
   const [showCropSimulator, setShowCropSimulator] = useState(false);
+  const [showDominantColors, setShowDominantColors] = useLocalStorageState(
+    'media-viewer-show-dominant-colors',
+    {
+      defaultValue: false,
+    },
+  );
+  const [selectedHighlightColor, setSelectedHighlightColor] = useState<any>(null);
+  const [showColorAnalysis, setShowColorAnalysis] = useLocalStorageState(
+    'media-viewer-show-color-analysis',
+    {
+      defaultValue: false,
+    },
+  );
+  const [showQualityAssessment, setShowQualityAssessment] = useLocalStorageState(
+    'media-viewer-show-quality-assessment',
+    {
+      defaultValue: false,
+    },
+  );
 
   // Hooks
   const { getImage, loadImage, prefetchImage, loadingProgress, getLoadingStats } =
@@ -276,6 +313,11 @@ export function MediaViewerProvider({
   const { comparisonState, startComparison, exitComparison } = useMediaViewerComparison(
     images.length,
   );
+
+  // Clear color highlight when image changes
+  useEffect(() => {
+    setSelectedHighlightColor(null);
+  }, [currentIndex]);
 
   const {
     isDragging,
@@ -505,6 +547,18 @@ export function MediaViewerProvider({
     setShowRating(!showRating);
   };
 
+  const toggleDominantColors = () => {
+    setShowDominantColors(!showDominantColors);
+  };
+
+  const toggleColorAnalysis = () => {
+    setShowColorAnalysis(!showColorAnalysis);
+  };
+
+  const toggleQualityAssessment = () => {
+    setShowQualityAssessment(!showQualityAssessment);
+  };
+
   const handleToggleComparison = () => {
     if (comparisonState.isActive) {
       exitComparison();
@@ -599,6 +653,9 @@ export function MediaViewerProvider({
     onToggleFavorite: toggleFavorite,
     onToggleSlideshow: toggleSlideshow,
     onToggleHistogram: toggleHistogram,
+    onToggleDominantColors: toggleDominantColors,
+    onToggleColorAnalysis: toggleColorAnalysis,
+    onToggleQualityAssessment: toggleQualityAssessment,
     onToggleGrid: toggleGrid,
     onToggleQuickActions: toggleQuickActions,
     onToggleRating: toggleRating,
@@ -669,6 +726,14 @@ export function MediaViewerProvider({
     setShowRating,
     showLoadingIndicator,
     setShowLoadingIndicator,
+    showDominantColors,
+    setShowDominantColors,
+    selectedHighlightColor,
+    setSelectedHighlightColor,
+    showColorAnalysis,
+    setShowColorAnalysis,
+    showQualityAssessment,
+    setShowQualityAssessment,
     slideshow,
     setSlideshow,
     favoritesList,
@@ -716,6 +781,9 @@ export function MediaViewerProvider({
     toggleGrid,
     toggleQuickActions,
     toggleRating,
+    toggleDominantColors,
+    toggleColorAnalysis,
+    toggleQualityAssessment,
     handleToggleComparison,
     handleDelete,
     handleShare,
@@ -751,5 +819,9 @@ export function MediaViewerProvider({
     handleCropApply,
   };
 
-  return <MediaViewerContext.Provider value={contextValue}>{children}</MediaViewerContext.Provider>;
+  return (
+    <PopupManagerProvider>
+      <MediaViewerContext.Provider value={contextValue}>{children}</MediaViewerContext.Provider>
+    </PopupManagerProvider>
+  );
 }

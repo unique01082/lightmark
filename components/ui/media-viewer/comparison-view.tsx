@@ -12,6 +12,7 @@ import {
   ZoomOut,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { useStackablePopup } from './use-stackable-popup';
 
 interface ComparisonViewProps {
   images: string[];
@@ -47,6 +48,12 @@ export function ComparisonView({
   const [currentFlickerImage, setCurrentFlickerImage] = useState<'primary' | 'secondary'>(
     'primary',
   );
+
+  const { style: popupStyle, popupRef } = useStackablePopup('comparison-view', {
+    width: typeof window !== 'undefined' ? window.innerWidth - 40 : 800, // Just a bit smaller than full window
+    height: typeof window !== 'undefined' ? window.innerHeight - 40 : 600,
+    visible: isVisible,
+  });
 
   useEffect(() => {
     if (splitMode === 'flicker' && flickerActive) {
@@ -100,7 +107,13 @@ export function ComparisonView({
   if (!isVisible) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black">
+    <div
+      ref={popupRef}
+      className="fixed bg-black rounded-lg overflow-hidden shadow-2xl flex flex-col"
+      style={{
+        ...popupStyle,
+      }}
+    >
       {/* Header */}
       <div className="absolute top-0 left-0 right-0 z-10 flex items-center justify-between p-4 bg-gradient-to-b from-black/80 to-transparent">
         <div className="flex items-center gap-4">

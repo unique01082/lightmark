@@ -5,9 +5,7 @@
   },
   "prettier.requireConfig": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "cSpell.words": [
-    "ahooks",
-  ],
+  "cSpell.words": ["ahooks", "Lightroom"],
   "[svg]": {
     "editor.defaultFormatter": "redhat.vscode-xml"
   },
